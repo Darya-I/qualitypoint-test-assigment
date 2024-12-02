@@ -4,6 +4,7 @@ using Dadata;
 using Dadata.Model;
 using AddressService.Services;
 using AutoMapper;
+using AddressService.Models;
 
 
 namespace AddressService.Controllers
@@ -16,15 +17,14 @@ namespace AddressService.Controllers
     [ApiController]
     public class AddressController : ControllerBase
     {
-        private readonly IDadataService _dadataService;
-        private readonly ILogger<AddressController> _logger;
         private readonly IMapper _mapper;
+        private readonly DadataClient _dadataClient;
 
-        public AddressController(IDadataService dadataService, IMapper mapper, ILogger<AddressController> logger)
+
+        public AddressController(IMapper mapper, DadataClient dadataClient)
         {
-            _dadataService = dadataService;
             _mapper = mapper;
-            _logger = logger;
+            _dadataClient = dadataClient;
         }
 
         /// <summary>
@@ -45,32 +45,17 @@ namespace AddressService.Controllers
                 return BadRequest(new { Message = "Address cannot be null or empty." });
             }
 
-            var standardizedAddress = await _dadataService.StandardizeAddressAsync(address);
+            var standardizedAddresses = await _dadataClient.CleanAddressAsync(address);
 
-            if (standardizedAddress == null)
+            if (standardizedAddresses == null || standardizedAddresses.Length == 0)
             {
                 return NotFound(new { Message = "Unable to standardize the provided address." });
             }
 
-            var response = _mapper.Map<AddressResponce>(standardizedAddress);
+            var response = _mapper.Map<AddressResponce>(standardizedAddresses[0]); // берём первый адрес из массива
             return Ok(response);
         }
+
     }
 
-  
-
-    /// <summary>
-    /// выходная модель ответа 
-    /// </summary>
-    public class AddressResponce
-    {
-        public string Country { get; set; }
-        public string City { get; set; }
-        public string Street { get; set; }
-        public string HouseNumber { get; set; }
-        public string Appartament { get; set; }
-        public string Entrance { get; set; } 
-        public string PostalCode { get; set; }
-        public string Region { get; set; }
-    }
 }

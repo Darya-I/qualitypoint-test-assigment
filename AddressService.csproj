@@ -10,6 +10,14 @@
 	<JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
 
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Models\CleanAddressResponse.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Models\CleanAddressResponse.cs" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="Dadata" Version="23.6.1" />

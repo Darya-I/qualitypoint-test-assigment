@@ -1,5 +1,14 @@
 ## Привет, QualityPoint Development!
 
+### UPD: Удаление зависимости от DaData NuGet Package
+
+- Полностью удалён класс `DaDataService` и интерфейс `IDadataService`.
+- Вместо него добавлен новый интерфейс `IDadataClient` и его реализация `DadataClient`:
+  - Реализован кастомный HTTP-клиент для работы с API DaData через `HttpClient`.
+  - Добавлена десериализация ответов в новую модель `CleanAddress`.
+  - Заголовки, структура тела запроса и обработка ошибок приведены в соответствие с документацией DaData.
+- Контроллер `AddressController` обновлён для работы с `DadataClient`:
+
 <details>
 	<summary>Детали задания </summary>
 		
@@ -25,11 +34,10 @@
 Проект представляет собой простой веб-сервис, связывающийся с Dadata и стандартизирующий адрес.
 
 1. Установленные библиотеки:
-	-  AutoMapper,
+	- AutoMapper,
 	- Serilog,
 	- Swashbuckle,
-	- Dadata,
-	- Newtonsoft.Json
+	- System.Text
 
 1. Обработка ошибок с помощью middleware, исключения логируются и возвращаются в виде json-ответов. Логи выводятся в консоль и в файл (отдельная папка **Middleware** + создается папка log)
 1. Напрямую с API Dadata работает сервис **DaDataService**.  Сервис получает доступ к `IHttpClientFactory` для создания HTTP клиентов. Для конфигурации используются данные из `appsettings.json`, которые загружаются через `IOptions<DaDataSettings>`. Файлы объединены в папке Services для удобства и минимизации папок.

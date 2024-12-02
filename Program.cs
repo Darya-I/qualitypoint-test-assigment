@@ -1,7 +1,6 @@
 using AddressService.Middlewares;
 using AddressService.Services;
 using Serilog;
-using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateSlimBuilder(args);
 
@@ -16,17 +15,13 @@ builder.Host.UseSerilog((context, config) =>
 builder.Services.Configure<DaDataSettings>(
     builder.Configuration.GetSection("DaData"));
 
-// регистрация типизированного HttpClient с использованием IOptions
-builder.Services.AddHttpClient<IDadataService, DaDataService>((serviceProvider, client) =>
+// регистрация HttpClient для DadataClient
+builder.Services.AddHttpClient<DadataClient>(client =>
 {
-    var options = serviceProvider.GetRequiredService<IOptions<DaDataSettings>>().Value;
-    client.BaseAddress = new Uri(options.BaseUrl);
     client.DefaultRequestHeaders.Add("Accept", "application/json");
-    client.DefaultRequestHeaders.Add("Authorization", $"Token {options.ApiKey}");
 });
 
 // регистрация зависимостей
-builder.Services.AddScoped<IDadataService, DaDataService>(); // DI для сервиса
 builder.Services.AddAutoMapper(typeof(Program));            // AutoMapper
 builder.Services.AddControllers();                          // контроллеры
 builder.Services.AddEndpointsApiExplorer();                 // API Explorer для Swagger
